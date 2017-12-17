@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, ContentChildren, QueryList, AfterContentInit } from '@angular/core';
+import { Component, Output, Input, EventEmitter, ContentChildren, QueryList, AfterContentInit, OnChanges } from '@angular/core';
 import { WizardStepComponent } from './wizard-step.component';
 
 @Component({
@@ -34,7 +34,8 @@ import { WizardStepComponent } from './wizard-step.component';
     '.completed { cursor: default; }'
   ]
 })
-export class WizardComponent implements AfterContentInit {
+export class WizardComponent implements AfterContentInit, OnChanges {
+  @Input() forceStep: number;
   @ContentChildren(WizardStepComponent)
   wizardSteps: QueryList<WizardStepComponent>;
 
@@ -48,7 +49,15 @@ export class WizardComponent implements AfterContentInit {
 
   ngAfterContentInit() {
     this.wizardSteps.forEach(step => this._steps.push(step));
-    this.steps[0].isActive = true;
+    if (this.steps.length) {
+      this.steps[0].isActive = true;
+    }
+  }
+
+  ngOnChanges() {
+    if (this.forceStep) {
+      this.revertToStep(this.forceStep);
+    }  this.steps[0].isActive = true;
   }
 
   get steps(): Array<WizardStepComponent> {
@@ -106,6 +115,12 @@ export class WizardComponent implements AfterContentInit {
       this.activeStep = prevStep;
     }
   }
+
+  public revertToStep(stepIndex: any) {
+    this._isCompleted = false;
+    let nextStep: WizardStepComponent = this.steps[stepIndex];
+    this.goToStep(nextStep);
+  };
 
   public complete(): void {
     this.activeStep.onComplete.emit();
