@@ -15,10 +15,13 @@ import { WizardStepComponent } from './wizard-step.component';
     <div class="card-block">
       <ng-content></ng-content>
     </div>
-    <div class="card-footer" [hidden]="isCompleted">
-        <button type="button" class="btn btn-secondary float-left" (click)="previous()" [hidden]="!hasPrevStep || !activeStep.showPrev">Previous</button>
-        <button type="button" class="btn btn-secondary float-right" (click)="next()" [disabled]="!activeStep.isValid" [hidden]="!hasNextStep || !activeStep.showNext">Next</button>
-        <button type="button" class="btn btn-secondary float-right" (click)="complete()" [disabled]="!activeStep.isValid" [hidden]="hasNextStep">Done</button>
+    <div class="card-footer">
+        <button type="button" class="btn btn-secondary float-left" (click)="previous()" [hidden]="isCompleted || !hasPrevStep || !activeStep.showPrev">Previous</button>
+        <button type="button" class="btn btn-secondary float-right" (click)="next()" [disabled]="!activeStep.isValid" [hidden]="isCompleted || !hasNextStep || !activeStep.showNext">Next</button>
+        <button type="button" class="btn btn-secondary float-right" (click)="complete()" [disabled]="!activeStep.isValid || isSubmitting" [hidden]="isCompleted && !isSubmitting || hasNextStep">
+          Save
+          <i class="fa fa-spinner fa-spin float-right" *ngIf="isSubmitting" aria-hidden="true"></i>
+        </button>
     </div>
   </div>`
   ,
@@ -36,6 +39,7 @@ import { WizardStepComponent } from './wizard-step.component';
 })
 export class WizardComponent implements AfterContentInit, OnChanges {
   @Input() forceStep: number;
+  @Input() isSubmitting: boolean;
   @ContentChildren(WizardStepComponent)
   wizardSteps: QueryList<WizardStepComponent>;
 
@@ -56,8 +60,8 @@ export class WizardComponent implements AfterContentInit, OnChanges {
 
   ngOnChanges() {
     if (this.forceStep) {
-      this.revertToStep(this.forceStep);
-    }  this.steps[0].isActive = true;
+      this.revertToStep(this.forceStep - 1);
+    }
   }
 
   get steps(): Array<WizardStepComponent> {
@@ -126,5 +130,4 @@ export class WizardComponent implements AfterContentInit, OnChanges {
     this.activeStep.onComplete.emit();
     this._isCompleted = true;
   }
-
 }
