@@ -19,7 +19,7 @@ import { WizardStepComponent } from './wizard-step.component';
         <button type="button" class="btn btn-secondary float-left" (click)="previous()" [hidden]="isCompleted || !hasPrevStep || !activeStep.showPrev">Previous</button>
         <button type="button" class="btn btn-secondary float-right" (click)="next()" [disabled]="!activeStep.isValid" [hidden]="isCompleted || !hasNextStep || !activeStep.showNext">Next</button>
         <button type="button" class="btn btn-secondary float-right" (click)="complete()" [disabled]="!activeStep.isValid || isSubmitting" [hidden]="isCompleted && !isSubmitting || hasNextStep">
-          Save
+          Submit
           <i class="fa fa-spinner fa-spin float-right" *ngIf="isSubmitting" aria-hidden="true"></i>
         </button>
     </div>
